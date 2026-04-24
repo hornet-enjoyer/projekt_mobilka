@@ -11,8 +11,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.projekt_mobilka.ui.MainViewModel
 import com.example.projekt_mobilka.ui.Screen
-import com.example.projekt_mobilka.ui.registration.RegistrationScreen
+import com.example.projekt_mobilka.ui.views.RegistrationScreen
 import com.example.projekt_mobilka.ui.views.GameScreen
+import com.example.projekt_mobilka.ui.views.SettingsScreen
 import com.example.projekt_mobilka.ui.theme.Projekt_mobilkaTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,12 +28,23 @@ class MainActivity : ComponentActivity() {
                     when (viewModel.currentScreen) {
                         is Screen.Registration -> {
                             RegistrationScreen(
-                                onRegisterSuccess = { viewModel.navigateToGame() },
+                                onRegisterSuccess = { username -> 
+                                    viewModel.registerUser(username) 
+                                },
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
                         is Screen.Game -> {
                             GameScreen(
+                                onSettingsClick = { viewModel.navigateToSettings() },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+                        is Screen.Settings -> {
+                            SettingsScreen(
+                                username = viewModel.user.username,
+                                onUsernameChange = { viewModel.updateUsername(it) },
+                                onBackClick = { viewModel.navigateToGame() },
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }

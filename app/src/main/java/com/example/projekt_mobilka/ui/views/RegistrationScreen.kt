@@ -19,7 +19,10 @@ import androidx.compose.ui.unit.sp
 import com.example.projekt_mobilka.ui.theme.Projekt_mobilkaTheme
 
 @Composable
-fun RegistrationScreen(modifier: Modifier = Modifier) {
+fun RegistrationScreen(
+    onRegisterSuccess: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var username by remember { mutableStateOf("") }
 
     Column(
@@ -102,7 +105,7 @@ fun RegistrationScreen(modifier: Modifier = Modifier) {
 
         // Register Button
         Button(
-            onClick = { /* TODO: Implement registration */ },
+            onClick = { onRegisterSuccess(username) },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(56.dp),
@@ -124,6 +127,6 @@ fun RegistrationScreen(modifier: Modifier = Modifier) {
 @Composable
 fun RegistrationScreenPreview() {
     Projekt_mobilkaTheme {
-        RegistrationScreen()
+        RegistrationScreen(onRegisterSuccess = {})
     }
 }

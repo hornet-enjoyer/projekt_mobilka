@@ -22,7 +22,10 @@ import androidx.compose.ui.unit.sp
 import com.example.projekt_mobilka.ui.theme.Projekt_mobilkaTheme
 
 @Composable
-fun GameScreen(modifier: Modifier = Modifier) {
+fun GameScreen(
+    onSettingsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
     var selectedDifficulty by remember { mutableStateOf("Łatwy") }
     val difficulties = listOf("Łatwy", "Średni", "Trudny")
@@ -46,12 +49,14 @@ fun GameScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
-                modifier = Modifier.size(32.dp),
-                tint = Color.Black
-            )
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    modifier = Modifier.size(32.dp),
+                    tint = Color.Black
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -178,6 +183,6 @@ fun GameHistoryItem(result: GameResult) {
 @Composable
 fun GameScreenPreview() {
     Projekt_mobilkaTheme {
-        GameScreen()
+        GameScreen(onSettingsClick = {})
     }
 }
