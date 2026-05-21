@@ -30,6 +30,18 @@ enum class ComparisonStatus {
     CORRECT, TOO_HIGH, TOO_LOW
 }
 
+enum class Difficulty(val label: String, val lives: Int) {
+    EASY("Łatwy", 10),
+    MEDIUM("Średni", 5),
+    HARD("Trudny", 3);
+
+    companion object {
+        fun fromLabel(label: String): Difficulty {
+            return entries.find { it.label == label } ?: EASY
+        }
+    }
+}
+
 val capitalCities = listOf(
     Capital("Warszawa", 52.2297, 21.0122),
     Capital("Berlin", 52.5200, 13.4050),

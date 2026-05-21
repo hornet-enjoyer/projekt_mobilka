@@ -19,12 +19,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.projekt_mobilka.model.Difficulty
 import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 
 @Composable
 fun GameScreen(
     onSettingsClick: () -> Unit,
-    onStartGameClick: () -> Unit,
+    onStartGameClick: (Difficulty) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -81,7 +82,7 @@ fun GameScreen(
 
         // Start Game Button
         Button(
-            onClick = onStartGameClick,
+            onClick = { onStartGameClick(Difficulty.fromLabel(selectedDifficulty)) },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(56.dp),
@@ -184,6 +185,6 @@ fun GameHistoryItem(result: GameResult) {
 @Composable
 fun GameScreenPreview() {
     Projekt_mobilkaTheme {
-        GameScreen(onSettingsClick = {}, onStartGameClick = {})
+        GameScreen(onSettingsClick = {}, onStartGameClick = { _ -> })
     }
 }

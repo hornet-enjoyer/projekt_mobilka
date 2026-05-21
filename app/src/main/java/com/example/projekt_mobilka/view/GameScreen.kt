@@ -42,6 +42,7 @@ fun GameScreenPlayPreview() {
         ) {
             PlayScreen(
                 gameState = GameState(
+                    lives = 5,
                     targetCapital = Capital("Warszawa", 52.2297, 21.0122),
                     targetWeather = CurrentWeather(7.0, 67, 10.0, 3),
                     guesses = listOf(
@@ -65,6 +66,11 @@ fun PlayScreen(
     var guessText by remember { mutableStateOf("") }
 
     if (gameState.isGameOver) {
+        val title = if (gameState.isGameWon) "Wygrana!" else "Przegrana"
+        val message = if (gameState.isGameWon) 
+            "Brawo! Stolica to ${gameState.targetCapital?.name}" 
+            else "Niestety, zabrakło żyć. Stolica to ${gameState.targetCapital?.name}"
+
         AlertDialog(
             onDismissRequest = onGameEnd,
             confirmButton = {
@@ -72,8 +78,8 @@ fun PlayScreen(
                     Text("OK")
                 }
             },
-            title = { Text("Wygrana!") },
-            text = { Text("Brawo! Stolica to ${gameState.targetCapital?.name}") }
+            title = { Text(title) },
+            text = { Text(message) }
         )
     }
 
@@ -83,6 +89,15 @@ fun PlayScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Health points display
+        Text(
+            text = "Pozostałe życia: ${gameState.lives}",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = if (gameState.lives <= 2) Color.Red else Color.Unspecified,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
         // Weather Info Card
         if (gameState.isLoading) {
             Box(modifier = Modifier.height(200.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {

@@ -23,7 +23,9 @@ data class GameState(
     val targetCapital: Capital? = null,
     val targetWeather: CurrentWeather? = null,
     val guesses: List<Guess> = emptyList(),
+    val lives: Int = 0,
     val isGameOver: Boolean = false,
+    val isGameWon: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -93,9 +95,9 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
         currentScreen = Screen.Settings
     }
 
-    fun startNewGame() {
+    fun startNewGame(difficulty: Difficulty = Difficulty.EASY) {
         // Reset state for new game
-        gameState = GameState(isLoading = true)
+        gameState = GameState(isLoading = true, lives = difficulty.lives)
         currentScreen = Screen.Play
         
         viewModelScope.launch {
@@ -143,13 +145,22 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 val newGuesses = listOf(guess) + gameState.guesses
                 val won = guessedCapital.name.equals(targetCapital.name, ignoreCase = true)
                 
+                var newLives = gameState.lives
+                if (!won) {
+                    newLives--
+                }
+
                 if (won) {
                     repository.incrementWins()
+                } else if (newLives <= 0) {
+                    repository.incrementLosses()
                 }
 
                 gameState = gameState.copy(
                     guesses = newGuesses,
-                    isGameOver = won,
+                    lives = newLives,
+                    isGameOver = won || newLives <= 0,
+                    isGameWon = won,
                     error = null
                 )
             } catch (e: Exception) {
