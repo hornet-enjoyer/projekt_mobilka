@@ -24,6 +24,7 @@ import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 @Composable
 fun GameScreen(
     onSettingsClick: () -> Unit,
+    onStartGameClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -80,7 +81,7 @@ fun GameScreen(
 
         // Start Game Button
         Button(
-            onClick = { /* TODO: Start Game */ },
+            onClick = onStartGameClick,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(56.dp),
@@ -183,6 +184,6 @@ fun GameHistoryItem(result: GameResult) {
 @Composable
 fun GameScreenPreview() {
     Projekt_mobilkaTheme {
-        GameScreen(onSettingsClick = {})
+        GameScreen(onSettingsClick = {}, onStartGameClick = {})
     }
 }

@@ -1,4 +1,4 @@
-package com.example.projekt_mobilka.view
+package com.example.projekt_mobilka
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,9 +11,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.projekt_mobilka.MyApplication
 import com.example.projekt_mobilka.viewmodel.MainViewModel
 import com.example.projekt_mobilka.viewmodel.Screen
+import com.example.projekt_mobilka.view.RegistrationScreen
+import com.example.projekt_mobilka.view.GameScreen
+import com.example.projekt_mobilka.view.SettingsScreen
+import com.example.projekt_mobilka.view.PlayScreen
 import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 
 class MainActivity : ComponentActivity() {
