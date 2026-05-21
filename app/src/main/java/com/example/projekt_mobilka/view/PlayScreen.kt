@@ -86,12 +86,22 @@ fun PlayScreen(
                     .padding(horizontal = 16.dp)
             ) {
                 Text("Kraj / Stolica", fontSize = 12.sp, color = Color.Gray)
-                BasicTextField(
-                    value = guessText,
-                    onValueChange = { guessText = it },
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    if (guessText.isEmpty()) {
+                        // DEBUG: To be removed later - shows the target city name
+                        Text(
+                            text = gameState.targetCapital?.name ?: "",
+                            color = Color.Gray,
+                            fontSize = 18.sp
+                        )
+                    }
+                    BasicTextField(
+                        value = guessText,
+                        onValueChange = { guessText = it },
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             
             Box(

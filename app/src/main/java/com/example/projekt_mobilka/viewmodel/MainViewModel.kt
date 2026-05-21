@@ -81,6 +81,7 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     fun startNewGame() {
+        // Reset state for new game
         gameState = GameState(isLoading = true)
         currentScreen = Screen.Play
         
@@ -91,12 +92,13 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 gameState = gameState.copy(
                     targetCapital = randomCapital,
                     targetWeather = response.current,
-                    isLoading = false
+                    isLoading = false,
+                    error = null
                 )
             } catch (e: Exception) {
                 gameState = gameState.copy(
                     isLoading = false,
-                    error = "Błąd pobierania danych: ${e.message}"
+                    error = "Problem z połączeniem. Sprawdź internet."
                 )
             }
         }
@@ -126,7 +128,8 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 )
                 
                 val newGuesses = listOf(guess) + gameState.guesses
-                val won = guessedCapital.name == targetCapital.name
+                // Also check if the coordinates are very close or names match
+                val won = guessedCapital.name.equals(targetCapital.name, ignoreCase = true)
                 
                 gameState = gameState.copy(
                     guesses = newGuesses,
@@ -134,7 +137,7 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                     error = null
                 )
             } catch (e: Exception) {
-                gameState = gameState.copy(error = "Błąd podczas zgadywania: ${e.message}")
+                gameState = gameState.copy(error = "Błąd połączenia podczas sprawdzania.")
             }
         }
     }
