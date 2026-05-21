@@ -33,4 +33,14 @@ class UserRepository(private val userDao: UserDao, private val context: Context)
 
         userDao.insertUser(currentUser.copy(profilePicturePath = file.absolutePath))
     }
+
+    suspend fun incrementWins() {
+        val currentUser = user.first() ?: return
+        userDao.insertUser(currentUser.copy(wins = currentUser.wins + 1))
+    }
+
+    suspend fun incrementLosses() {
+        val currentUser = user.first() ?: return
+        userDao.insertUser(currentUser.copy(losses = currentUser.losses + 1))
+    }
 }

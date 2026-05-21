@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey val id: Int = 0,
     val username: String = "",
-    val profilePicturePath: String? = null
+    val profilePicturePath: String? = null,
+    val wins: Int = 0,
+    val losses: Int = 0
 )

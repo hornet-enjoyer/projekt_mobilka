@@ -1,6 +1,10 @@
 package com.example.projekt_mobilka.view
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,17 +17,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 
 @Composable
 fun RegistrationScreen(
-    onRegisterSuccess: (String) -> Unit,
+    onRegisterSuccess: (String, Uri?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var username by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+    }
 
     Column(
         modifier = modifier
@@ -44,15 +57,25 @@ fun RegistrationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(CircleShape)
-                    .background(Color(0xFFEADDFF)),
+                    .background(Color(0xFFEADDFF))
+                    .clickable { launcher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(0.7f),
-                    tint = Color(0xFF4F378B)
-                )
+                if (selectedImageUri != null) {
+                    AsyncImage(
+                        model = selectedImageUri,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(0.7f),
+                        tint = Color(0xFF4F378B)
+                    )
+                }
             }
 
             // Edit Icon (FAB style)
@@ -64,6 +87,7 @@ fun RegistrationScreen(
                     .clip(CircleShape)
                     .background(Color.White)
                     .padding(2.dp)
+                    .clickable { launcher.launch("image/*") }
             ) {
                 Box(
                     modifier = Modifier
@@ -105,7 +129,7 @@ fun RegistrationScreen(
 
         // Register Button
         Button(
-            onClick = { onRegisterSuccess(username) },
+            onClick = { onRegisterSuccess(username, selectedImageUri) },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(56.dp),
@@ -127,6 +151,6 @@ fun RegistrationScreen(
 @Composable
 fun RegistrationScreenPreview() {
     Projekt_mobilkaTheme {
-        RegistrationScreen(onRegisterSuccess = {})
+        RegistrationScreen(onRegisterSuccess = { _, _ -> })
     }
 }

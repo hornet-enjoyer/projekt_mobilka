@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 sealed class Screen {
+    object Initial : Screen()
     object Registration : Screen()
     object Game : Screen()
     object Settings : Screen()
@@ -28,7 +29,7 @@ data class GameState(
 )
 
 class MainViewModel(private val repository: UserRepository) : ViewModel() {
-    var currentScreen by mutableStateOf<Screen>(Screen.Registration)
+    var currentScreen by mutableStateOf<Screen>(Screen.Initial)
         private set
 
     var user by mutableStateOf(User())
@@ -44,14 +45,26 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
             repository.user.collect { dbUser ->
                 if (dbUser != null) {
                     user = dbUser
+                    // If we were in Initial state and found a user, go to Game
+                    // If no user found (username blank), go to Registration
+                    if (currentScreen is Screen.Initial) {
+                        if (dbUser.username.isNotBlank()) {
+                            navigateToGame()
+                        } else {
+                            navigateToRegistration()
+                        }
+                    }
+                } else if (currentScreen is Screen.Initial) {
+                    navigateToRegistration()
                 }
             }
         }
     }
 
-    fun registerUser(username: String) {
+    fun registerUser(username: String, profilePictureUri: Uri? = null) {
         viewModelScope.launch {
             repository.updateUsername(username)
+            profilePictureUri?.let { repository.updateProfilePicture(it) }
             navigateToGame()
         }
     }
@@ -128,9 +141,12 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 )
                 
                 val newGuesses = listOf(guess) + gameState.guesses
-                // Also check if the coordinates are very close or names match
                 val won = guessedCapital.name.equals(targetCapital.name, ignoreCase = true)
                 
+                if (won) {
+                    repository.incrementWins()
+                }
+
                 gameState = gameState.copy(
                     guesses = newGuesses,
                     isGameOver = won,

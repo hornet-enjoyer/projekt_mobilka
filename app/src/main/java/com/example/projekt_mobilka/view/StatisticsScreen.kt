@@ -30,17 +30,18 @@ import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 fun SettingsScreen(
     username: String,
     profilePicturePath: String?,
+    wins: Int,
+    losses: Int,
     onUsernameChange: (String) -> Unit,
     onProfilePictureChange: (Uri) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var option1 by remember { mutableStateOf(false) }
-    var option2 by remember { mutableStateOf(true) }
-    var option3 by remember { mutableStateOf(true) }
-    
     var isEditingUsername by remember { mutableStateOf(false) }
     var tempUsername by remember { mutableStateOf(username) }
+
+    val totalGames = wins + losses
+    val winRate = if (totalGames > 0) (wins.toDouble() / totalGames * 100).toInt() else 0
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -178,38 +179,32 @@ fun SettingsScreen(
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f), thickness = 1.dp, color = Color.LightGray)
 
-        // Options List
-        SettingsOptionItem("Opcja 1", option1) { option1 = it }
-        SettingsOptionItem("Opcja 2", option2) { option2 = it }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Stats List
+        StatItem("Wygrane gry", wins.toString())
+        StatItem("Przegrane gry", losses.toString())
         
-        HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f), thickness = 1.dp, color = Color.LightGray)
+        HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp), thickness = 1.dp, color = Color.LightGray)
         
-        SettingsOptionItem("Opcja 3", option3) { option3 = it }
+        StatItem("Procent wygranych gier", "$winRate%")
     }
 }
 
 @Composable
-fun SettingsOptionItem(
+fun StatItem(
     label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    value: String
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .padding(vertical = 8.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, fontSize = 18.sp)
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = Color(0xFF7D67AE)
-            )
-        )
+        Text(text = value, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF7D67AE))
     }
 }
 
@@ -220,6 +215,8 @@ fun SettingsScreenPreview() {
         SettingsScreen(
             username = "Username",
             profilePicturePath = null,
+            wins = 10,
+            losses = 5,
             onUsernameChange = {},
             onProfilePictureChange = {},
             onBackClick = {}

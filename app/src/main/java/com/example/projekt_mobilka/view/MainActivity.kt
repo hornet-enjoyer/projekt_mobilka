@@ -5,9 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -33,10 +36,20 @@ class MainActivity : ComponentActivity() {
             Projekt_mobilkaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     when (viewModel.currentScreen) {
+                        is Screen.Initial -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(innerPadding),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
                         is Screen.Registration -> {
                             RegistrationScreen(
-                                onRegisterSuccess = { username -> 
-                                    viewModel.registerUser(username) 
+                                onRegisterSuccess = { username, uri -> 
+                                    viewModel.registerUser(username, uri)
                                 },
                                 modifier = Modifier.padding(innerPadding)
                             )
@@ -52,6 +65,8 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(
                                 username = viewModel.user.username,
                                 profilePicturePath = viewModel.user.profilePicturePath,
+                                wins = viewModel.user.wins,
+                                losses = viewModel.user.losses,
                                 onUsernameChange = { viewModel.updateUsername(it) },
                                 onProfilePictureChange = { viewModel.updateProfilePicture(it) },
                                 onBackClick = { viewModel.navigateToGame() },
