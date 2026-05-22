@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projekt_mobilka.model.*
 import com.example.projekt_mobilka.network.WeatherApi
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.random.Random
 
 sealed class Screen {
@@ -50,8 +51,6 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
             repository.user.collect { dbUser ->
                 if (dbUser != null) {
                     user = dbUser
-                    // If we were in Initial state and found a user, go to Game
-                    // If no user found (username blank), go to Registration
                     if (currentScreen is Screen.Initial) {
                         if (dbUser.username.isNotBlank()) {
                             navigateToGame()
@@ -104,7 +103,6 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     fun startNewGame(difficulty: Difficulty = Difficulty.EASY) {
-        // Reset state for new game
         gameState = GameState(isLoading = true, lives = difficulty.lives)
         currentScreen = Screen.Play
         
@@ -179,13 +177,9 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
 
     private fun compare(current: Double, target: Double): ComparisonStatus {
         return when {
-            Math.abs(current - target) < 1.0 -> ComparisonStatus.CORRECT
+            abs(current - target) < 1.0 -> ComparisonStatus.CORRECT
             current < target -> ComparisonStatus.TOO_LOW
             else -> ComparisonStatus.TOO_HIGH
         }
-    }
-    
-    fun resetError() {
-        gameState = gameState.copy(error = null)
     }
 }

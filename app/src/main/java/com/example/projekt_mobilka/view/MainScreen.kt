@@ -34,7 +34,6 @@ import com.example.projekt_mobilka.model.Difficulty
 import com.example.projekt_mobilka.model.GameResultEntity
 import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 import kotlinx.coroutines.launch
-import android.media.MediaMetadataRetriever
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.geometry.Offset
 import java.text.SimpleDateFormat
@@ -350,7 +349,6 @@ fun TutorialPage(pageIndex: Int) {
 @Composable
 fun GameHistoryItem(result: GameResultEntity) {
     val statusText = if (result.won) "Wygrana" else "Przegrana"
-    // Darker and less visible tints
     val overlayColor = if (result.won) Color(0xFF1B5E20).copy(alpha = 0.6f) else Color(0xFFB71C1C).copy(alpha = 0.6f)
     val formattedDate = formatTimestamp(result.timestamp)
 

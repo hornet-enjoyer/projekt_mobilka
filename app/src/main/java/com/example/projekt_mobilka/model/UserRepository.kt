@@ -31,7 +31,6 @@ class UserRepository(
             }
         }
 
-        // Delete old picture if it exists
         currentUser.profilePicturePath?.let { path ->
             File(path).delete()
         }

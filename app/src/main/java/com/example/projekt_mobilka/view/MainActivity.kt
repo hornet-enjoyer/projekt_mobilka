@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.projekt_mobilka.MyApplication
-import com.example.projekt_mobilka.model.Difficulty
-import com.example.projekt_mobilka.model.GameResultEntity
 import com.example.projekt_mobilka.viewmodel.MainViewModel
 import com.example.projekt_mobilka.viewmodel.Screen
 import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
