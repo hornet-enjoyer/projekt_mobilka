@@ -37,6 +37,9 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
     var user by mutableStateOf(User())
         private set
 
+    var gameHistory by mutableStateOf<List<GameResultEntity>>(emptyList())
+        private set
+
     var gameState by mutableStateOf(GameState())
         private set
 
@@ -59,6 +62,11 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 } else if (currentScreen is Screen.Initial) {
                     navigateToRegistration()
                 }
+            }
+        }
+        viewModelScope.launch {
+            repository.gameHistory.collect { history ->
+                gameHistory = history
             }
         }
     }
@@ -151,9 +159,9 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
                 }
 
                 if (won) {
-                    repository.incrementWins()
+                    repository.incrementWins(targetCapital.name)
                 } else if (newLives <= 0) {
-                    repository.incrementLosses()
+                    repository.incrementLosses(targetCapital.name)
                 }
 
                 gameState = gameState.copy(

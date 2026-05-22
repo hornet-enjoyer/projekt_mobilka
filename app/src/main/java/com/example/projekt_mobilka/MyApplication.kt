@@ -5,6 +5,6 @@ import com.example.projekt_mobilka.model.AppDatabase
 import com.example.projekt_mobilka.model.UserRepository
 
 class MyApplication : Application() {
-    private val database by lazy { AppDatabase.getDatabase(this) }
-    val repository by lazy { UserRepository(database.userDao(), this) }
+    val database by lazy { AppDatabase.getDatabase(this) }
+    val repository by lazy { UserRepository(database.userDao(), database.gameResultDao(), this) }
 }

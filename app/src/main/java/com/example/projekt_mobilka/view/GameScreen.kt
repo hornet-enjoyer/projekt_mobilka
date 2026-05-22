@@ -9,13 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,7 +40,7 @@ fun GameScreenPlayPreview() {
                     targetCapital = Capital("Warszawa", 52.2297, 21.0122),
                     targetWeather = CurrentWeather(7.0, 67, 10.0, 3),
                     guesses = listOf(
-                        Guess("Barcelona", ComparisonStatus.TOO_LOW, ComparisonStatus.CORRECT, ComparisonStatus.TOO_HIGH)
+                        Guess("Madryt", ComparisonStatus.TOO_LOW, ComparisonStatus.CORRECT, ComparisonStatus.TOO_HIGH)
                     )
                 ),
                 onGuessSubmit = {},
@@ -206,7 +200,7 @@ fun WeatherHeaderCard(weather: CurrentWeather) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Face,
+                    imageVector = getWeatherIcon(weather.weatherCode),
                     contentDescription = null,
                     modifier = Modifier.size(80.dp),
                     tint = Color.White
@@ -215,7 +209,9 @@ fun WeatherHeaderCard(weather: CurrentWeather) {
                     text = getWeatherDescription(weather.weatherCode),
                     color = Color.White,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
 
@@ -228,19 +224,19 @@ fun WeatherHeaderCard(weather: CurrentWeather) {
                 WeatherParamBox(
                     label = "Temperatura",
                     value = "${weather.temperature.toInt()}°C",
-                    icon = Icons.Default.Place,
+                    icon = Icons.Default.Thermostat,
                     backgroundColor = Color(0xFFB69DF8)
                 )
                 WeatherParamBox(
                     label = "Wiatr",
                     value = "${weather.windSpeed.toInt()} KPH",
-                    icon = Icons.AutoMirrored.Filled.List,
+                    icon = Icons.Default.Air,
                     backgroundColor = Color(0xFF9173D1)
                 )
                 WeatherParamBox(
                     label = "Wilgoć",
                     value = "${weather.humidity}%",
-                    icon = Icons.Default.Favorite,
+                    icon = Icons.Default.WaterDrop,
                     backgroundColor = Color(0xFF654E9B)
                 )
             }
@@ -274,46 +270,69 @@ fun ColumnScope.WeatherParamBox(label: String, value: String, icon: ImageVector,
 @Composable
 fun GuessItemView(guess: Guess) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(130.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF49454F))
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = guess.cityName,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Row(modifier = Modifier.fillMaxWidth().height(80.dp).padding(top = 8.dp)) {
-                ComparisonBox("Temperatura", guess.tempStatus, Modifier.weight(1f))
-                ComparisonBox("Wiatr", guess.windStatus, Modifier.weight(1f))
-                ComparisonBox("Wilgoć", guess.humidityStatus, Modifier.weight(1f))
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Top part: City Name
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.4f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = guess.cityName,
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+
+            // Bottom part: Comparisons in a Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.6f)
+            ) {
+                ComparisonBox("Temperatura", guess.tempStatus)
+                ComparisonBox("Wiatr", guess.windStatus)
+                ComparisonBox("Wilgoć", guess.humidityStatus)
             }
         }
     }
 }
 
 @Composable
-fun ComparisonBox(label: String, status: ComparisonStatus, modifier: Modifier = Modifier) {
-    val color = if (status == ComparisonStatus.CORRECT) Color(0xFF609466) else Color(0xFF8F4C52)
+fun RowScope.ComparisonBox(label: String, status: ComparisonStatus) {
+    val backgroundColor = if (status == ComparisonStatus.CORRECT) Color(0xFF609466) else Color(0xFF8F4C52)
     val icon = when (status) {
         ComparisonStatus.CORRECT -> Icons.Default.Check
         ComparisonStatus.TOO_HIGH -> Icons.Default.KeyboardArrowUp
         ComparisonStatus.TOO_LOW -> Icons.Default.KeyboardArrowDown
     }
+    val statusText = when (status) {
+        ComparisonStatus.CORRECT -> "OK"
+        ComparisonStatus.TOO_HIGH -> "Za wysoka"
+        ComparisonStatus.TOO_LOW -> "Za niska"
+    }
 
     Box(
-        modifier = modifier
+        modifier = Modifier
+            .weight(1f)
             .fillMaxHeight()
-            .background(color),
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(label, fontSize = 10.sp, color = Color.White)
-            Icon(imageVector = icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+            Text(statusText, fontSize = 14.sp, color = Color.White, fontWeight = FontWeight.Bold)
+            Icon(imageVector = icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
         }
     }
 }
@@ -329,5 +348,19 @@ fun getWeatherDescription(code: Int): String {
         80, 81, 82 -> "Ulewa"
         95 -> "Burza"
         else -> "Pochmurnie"
+    }
+}
+
+fun getWeatherIcon(code: Int): ImageVector {
+    return when (code) {
+        0 -> Icons.Default.WbSunny
+        1, 2, 3 -> Icons.Default.CloudQueue
+        45, 48 -> Icons.Default.Cloud
+        51, 53, 55 -> Icons.Default.Grain
+        61, 63, 65 -> Icons.Default.Umbrella
+        71, 73, 75 -> Icons.Default.AcUnit
+        80, 81, 82 -> Icons.Default.Grain
+        95 -> Icons.Default.Thunderstorm
+        else -> Icons.Default.Cloud
     }
 }

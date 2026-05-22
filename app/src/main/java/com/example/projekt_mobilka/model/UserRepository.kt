@@ -7,8 +7,13 @@ import kotlinx.coroutines.flow.first
 import java.io.File
 import java.io.FileOutputStream
 
-class UserRepository(private val userDao: UserDao, private val context: Context) {
+class UserRepository(
+    private val userDao: UserDao,
+    private val gameResultDao: GameResultDao,
+    private val context: Context
+) {
     val user: Flow<User?> = userDao.getUser()
+    val gameHistory: Flow<List<GameResultEntity>> = gameResultDao.getAllResults()
 
     suspend fun updateUsername(username: String) {
         val currentUser = user.first() ?: User()
@@ -34,13 +39,15 @@ class UserRepository(private val userDao: UserDao, private val context: Context)
         userDao.insertUser(currentUser.copy(profilePicturePath = file.absolutePath))
     }
 
-    suspend fun incrementWins() {
+    suspend fun incrementWins(cityName: String) {
         val currentUser = user.first() ?: return
         userDao.insertUser(currentUser.copy(wins = currentUser.wins + 1))
+        gameResultDao.insertResult(GameResultEntity(timestamp = System.currentTimeMillis(), won = true, cityName = cityName))
     }
 
-    suspend fun incrementLosses() {
+    suspend fun incrementLosses(cityName: String) {
         val currentUser = user.first() ?: return
         userDao.insertUser(currentUser.copy(losses = currentUser.losses + 1))
+        gameResultDao.insertResult(GameResultEntity(timestamp = System.currentTimeMillis(), won = false, cityName = cityName))
     }
 }
