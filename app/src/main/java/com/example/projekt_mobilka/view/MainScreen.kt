@@ -1,45 +1,50 @@
 package com.example.projekt_mobilka.view
 
 import android.annotation.SuppressLint
+import android.widget.VideoView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import android.widget.VideoView
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.graphics.painter.ColorPainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.projekt_mobilka.model.Difficulty
 import com.example.projekt_mobilka.model.GameResultEntity
 import com.example.projekt_mobilka.view.theme.Projekt_mobilkaTheme
 import kotlinx.coroutines.launch
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.geometry.Offset
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import androidx.core.net.toUri
 
 @Composable
 fun GameScreen(
@@ -298,7 +303,7 @@ fun TutorialPage(pageIndex: Int) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             
-            val context = androidx.compose.ui.platform.LocalContext.current
+            val context = LocalContext.current
             val resId = context.resources.getIdentifier("tutorial", "raw", context.packageName)
             
             if (resId != 0) {
@@ -309,7 +314,7 @@ fun TutorialPage(pageIndex: Int) {
                         .fillMaxWidth()
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Transparent),
+                        .background(Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
                     AndroidView(
@@ -349,6 +354,7 @@ fun TutorialPage(pageIndex: Int) {
 @Composable
 fun GameHistoryItem(result: GameResultEntity) {
     val statusText = if (result.won) "Wygrana" else "Przegrana"
+    // Darker and less visible tints
     val overlayColor = if (result.won) Color(0xFF1B5E20).copy(alpha = 0.6f) else Color(0xFFB71C1C).copy(alpha = 0.6f)
     val formattedDate = formatTimestamp(result.timestamp)
 
@@ -372,7 +378,7 @@ fun GameHistoryItem(result: GameResultEntity) {
         "Lizbona" -> "https://images.unsplash.com/photo-1585208798174-6cedd862bc9f?q=80&w=500&auto=format&fit=crop"
         "Dublin" -> "https://images.unsplash.com/photo-1549918838-316a4b8a1ec5?q=80&w=500&auto=format&fit=crop"
         "Reykjavík" -> "https://images.unsplash.com/photo-1504109586057-7a2ae83d1338?q=80&w=500&auto=format&fit=crop"
-        "Tallinn" -> "https://images.unsplash.com/photo-1548671153-6036814e76c1?q=80&w=500&auto=format&fit=crop"
+        "Tallinn", "Talinn" -> "https://images.unsplash.com/photo-1548671153-6036814e76c1?q=80&w=500&auto=format&fit=crop"
         "Ryga" -> "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?q=80&w=500&auto=format&fit=crop"
         "Wilno" -> "https://images.unsplash.com/photo-1571217691275-3004b50c0587?q=80&w=500&auto=format&fit=crop"
         "Kijów" -> "https://images.unsplash.com/photo-1565552391206-89689f76a5b6?q=80&w=500&auto=format&fit=crop"
@@ -380,21 +386,28 @@ fun GameHistoryItem(result: GameResultEntity) {
         "Sofia" -> "https://images.unsplash.com/photo-1555138136-120019983411?q=80&w=500&auto=format&fit=crop"
         "Zagrzeb" -> "https://images.unsplash.com/photo-1578652670774-89c030d9237f?q=80&w=500&auto=format&fit=crop"
         "Belgrad" -> "https://images.unsplash.com/photo-1588612143093-690a6184a4f8?q=80&w=500&auto=format&fit=crop"
-        else -> "https://images.unsplash.com/photo-1449034446853-66c86144b0ad?q=80&w=500&auto=format&fit=crop"
+        else -> ""
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp),
+            .height(70.dp)
+            .background(Color.Gray.copy(alpha = 0.2f)), // Solid background color placeholder
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            model = cityImageUrl,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        if (cityImageUrl.isNotEmpty()) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(cityImageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                error = rememberVectorPainter(Icons.Default.Error)
+            )
+        }
         
         // Semi-transparent overlay to keep text readable
         Box(
